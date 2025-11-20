@@ -1,0 +1,70 @@
+services:
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: socialdb
+      POSTGRES_USER: socialuser
+      POSTGRES_PASSWORD: socialpass
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U socialuser -d socialdb"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  django:
+    build:
+      context: ./django_app
+      network: host
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
+    volumes:
+      - ./django_app:/app
+      - ./tweets-data:/home/dimas/crawling_sosmed/tweets-data
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_NAME=socialdb
+      - DB_USER=socialuser
+      - DB_PASS=socialpass
+
+  fastapi:
+    build:
+      context: ./fastapi_app
+      network: host
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
+    command: uvicorn main:app --host 0.0.0.0 --port 8001 --reload
+    volumes:
+      - ./fastapi_app:/app
+      - ./tweets-data:/home/dimas/crawling_sosmed/tweets-data
+      - ./assets:/home/dimas/crawling_sosmed/assets
+    ports:
+      - "8001:8001"
+    depends_on:
+      - db
+    environment:
+      - DB_HOST=db
+      - DB_NAME=socialdb
+      - DB_USER=socialuser
+      - DB_PASS=socialpass
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+        reservations:
+          memory: 512M
+    shm_size: '1gb'
+
+volumes:
+  postgres_data:

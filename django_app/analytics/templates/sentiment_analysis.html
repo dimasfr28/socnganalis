@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Sentiment Analysis - Social Media Analytics{% endblock %}
+
+{% block extra_css %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}
+
+{% block content %}
+<main class="container">
+    <!-- Header -->
+    <div style="margin-bottom: 3rem; margin-top: 2rem;">
+        <h2 style="color: var(--dark-gray); font-size: 2rem; margin-bottom: 0.5rem;">Sentiment Analysis</h2>
+        <p style="color: #718096; font-size: 1.1rem;">Analisis sentimen dari replies pelanggan IndiHome</p>
+    </div>
+
+    <!-- Sentiment Distribution Cards -->
+    <div class="sentiment-cards-grid">
+        <div class="sentiment-card sentiment-positive">
+            <div class="sentiment-icon">😊</div>
+            <div class="sentiment-info">
+                <h3 id="positive-count">0</h3>
+                <p>Positive</p>
+                <span id="positive-percentage" class="sentiment-percentage">0%</span>
+            </div>
+        </div>
+
+        <div class="sentiment-card sentiment-neutral">
+            <div class="sentiment-icon">😐</div>
+            <div class="sentiment-info">
+                <h3 id="neutral-count">0</h3>
+                <p>Neutral</p>
+                <span id="neutral-percentage" class="sentiment-percentage">0%</span>
+            </div>
+        </div>
+
+        <div class="sentiment-card sentiment-negative">
+            <div class="sentiment-icon">😞</div>
+            <div class="sentiment-info">
+                <h3 id="negative-count">0</h3>
+                <p>Negative</p>
+                <span id="negative-percentage" class="sentiment-percentage">0%</span>
+            </div>
+        </div>
+
+        <div class="sentiment-card sentiment-total">
+            <div class="sentiment-icon">📊</div>
+            <div class="sentiment-info">
+                <h3 id="total-analyzed">0</h3>
+                <p>Total Analyzed</p>
+                <span class="sentiment-percentage">Replies</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pie Chart: Sentiment by Engagement -->
+    <div class="analytics-section">
+        <h5>Sentiment Distribution by Engagement</h5>
+        <p style="color: #718096; margin-top: 0.5rem;">Engagement = Likes + Replies + Reply Count</p>
+        <div style="display: grid; grid-template-columns: 400px 1fr; gap: 4rem; align-items: center; margin-top: 2rem">
+            <div style="display: flex; justify-content: center">
+                <canvas id="sentimentEngagementChart" style="max-width: 360px; max-height: 360px"></canvas>
+            </div>
+            <div>
+                <table class="classic-table" id="sentimentEngagementTable"></table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Word Clouds -->
+    <div class="analytics-section">
+        <h5>Topic Analysis - Word Clouds by Sentiment</h5>
+        <p style="color: #718096; margin-top: 0.5rem;">Kata-kata yang paling sering muncul pada setiap kategori sentimen</p>
+
+        <div class="wordcloud-grid">
+            <!-- Negative Word Cloud -->
+            <div class="wordcloud-container">
+                <div class="wordcloud-header">
+                    <h6>😞 Negative Sentiment Topics</h6>
+                    <p>Topik yang sering dibahas dalam sentimen negatif</p>
+                </div>
+                <div id="wordcloud-negative" class="wordcloud-canvas"></div>
+            </div>
+
+            <!-- Positive Word Cloud -->
+            <div class="wordcloud-container">
+                <div class="wordcloud-header">
+                    <h6>😊 Positive Sentiment Topics</h6>
+                    <p>Topik yang sering dibahas dalam sentimen positif</p>
+                </div>
+                <div id="wordcloud-positive" class="wordcloud-canvas"></div>
+            </div>
+
+            <!-- Neutral Word Cloud -->
+            <div class="wordcloud-container">
+                <div class="wordcloud-header">
+                    <h6>😐 Neutral Sentiment Topics</h6>
+                    <p>Topik yang sering dibahas dalam sentimen netral</p>
+                </div>
+                <div id="wordcloud-neutral" class="wordcloud-canvas"></div>
+            </div>
+        </div>
+    </div>
+</main>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/sentiment.js' %}?v=1.7"></script>
+{% endblock %}

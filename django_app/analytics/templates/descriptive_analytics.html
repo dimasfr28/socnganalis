@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Descriptive Analytics - Social Media Analytics{% endblock %}
+
+{% block extra_css %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}
+
+{% block content %}
+<main class="container">
+      <div class="metrics-grid">
+        <div class="metric-card">
+          <h5>📝 Total Posts</h5>
+          <div class="metric-row">
+            <p id="total_posts" class="metric-value">-</p>
+            <p id="delta_posts" class="metric-delta">-</p>
+          </div>
+        </div>
+        <div class="metric-card">
+          <h5>💬 Total Replies</h5>
+          <div class="metric-row">
+            <p id="total_replies" class="metric-value">-</p>
+            <p id="delta_replies" class="metric-delta">-</p>
+          </div>
+        </div>
+        <div class="metric-card">
+          <h5>❤️ Total Likes</h5>
+          <div class="metric-row">
+            <p id="total_likes" class="metric-value">-</p>
+            <p id="delta_likes" class="metric-delta">-</p>
+          </div>
+        </div>
+        <div class="metric-card">
+          <h5>🔄 Total Retweets</h5>
+          <div class="metric-row">
+            <p id="total_retweets" class="metric-value">-</p>
+            <p id="delta_retweets" class="metric-delta">-</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="analytics-section">
+        <h5>Post Type by Engagement</h5>
+        <div style="display: grid; grid-template-columns: 400px 1fr; gap: 4rem; align-items: center; margin-top: 2rem">
+          <div style="display: flex; justify-content: center">
+            <canvas id="engagementChart" style="max-width: 360px; max-height: 360px"></canvas>
+          </div>
+          <div>
+            <table class="classic-table" id="engagementTable"></table>
+          </div>
+        </div>
+      </div>
+
+      <div class="analytics-section">
+        <h5>Peak Activity Hours (DBSCAN Clustering)</h5>
+        <div style="margin-bottom: 3rem; margin-top: 1.5rem">
+          <div id="peakRangesContainer" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem">
+            <!-- Peak hour range cards will be inserted here -->
+          </div>
+        </div>
+        <div>
+          <!-- <h6 style="text-align: center; margin-bottom: 2rem; font-size: 14px; color: #555; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase;">PCA Clustering Visualization</h6> -->
+          <div style="max-width: 900px; margin: 0 auto">
+            <canvas id="clusteringScatterChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <div class="analytics-section">
+        <h5>Engagement Insights</h5>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(450px, 1fr)); gap: 3rem; margin-top: 2rem">
+          <div class="chart-container">
+            <div class="chart-header">
+              <h6>Engagement by Day</h6>
+            </div>
+            <canvas id="dayEngagementChart"></canvas>
+          </div>
+          <div class="chart-container">
+            <div class="chart-header">
+              <h6>Most Used Hashtags</h6>
+            </div>
+            <canvas id="hashtagsChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </main>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/analytics.js' %}"></script>
+{% endblock %}

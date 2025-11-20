@@ -1,0 +1,236 @@
+{% extends "base.html" %}
+
+{% block title %}Social Media Analytics Tool{% endblock %}
+
+{% block extra_css %}
+<style>
+  .data-alert {
+    background: #fef3c7;
+    border-left: 4px solid #f59e0b;
+    padding: 1.5rem 2rem;
+    margin-bottom: 2rem;
+    border-radius: 8px;
+    display: none;
+  }
+
+  .data-alert h4 {
+    margin: 0 0 0.5rem 0;
+    color: #92400e;
+    font-size: 1.1rem;
+    font-weight: 600;
+  }
+
+  .data-alert p {
+    margin: 0 0 1rem 0;
+    color: #92400e;
+  }
+
+  .data-alert-button {
+    display: inline-block;
+    padding: 0.75rem 2rem;
+    background: #f59e0b;
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: background 0.3s ease;
+  }
+
+  .data-alert-button:hover {
+    background: #d97706;
+    color: white;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Data Alert -->
+<div class="data-alert" id="dataAlert">
+  <div class="container">
+    <h4>⚠️ Data Not Ready</h4>
+    <p>Platform data needs to be initialized before you can use the analytics features. Click below to set up your data.</p>
+    <a href="{% url 'analytics:data_initialization' %}" class="data-alert-button">Initialize Data Now</a>
+  </div>
+</div>
+<!-- Hero Banner -->
+<section class="hero-banner">
+    <div class="container">
+        <div class="hero-content-wrapper">
+            <div class="hero-text">
+                <h1 class="hero-title">Advanced Social Media Analytics Platform</h1>
+                <p class="hero-description">Unlock powerful insights from your social media data with cutting-edge analytics, machine learning, and AI-powered recommendations</p>
+                <div class="hero-buttons">
+                    <a href="{% url 'analytics:descriptive_analytics' %}" class="btn btn-primary-large">Get Started</a>
+                    <a href="#features" class="btn btn-outline">Explore Features</a>
+                </div>
+            </div>
+            <div class="hero-image">
+                <div class="stats-showcase">
+                    <div class="stat-item">
+                        <span class="stat-number">133+</span>
+                        <span class="stat-label">Posts Analyzed</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">6 Emotions</span>
+                        <span class="stat-label">Detection</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">Real-time</span>
+                        <span class="stat-label">Insights</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- About Section -->
+<section class="about-section">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title">About Our Platform</h2>
+            <p class="section-subtitle">Transforming social media data into actionable intelligence with AI-powered recommendations</p>
+        </div>
+        <div class="about-content">
+            <div class="about-text">
+                <p>Our Social Media Analytics Platform combines advanced data science techniques with intuitive visualizations to help you understand your social media presence. Using state-of-the-art algorithms including LinearSVM for sentiment analysis, rule-based emotion detection with 600+ keywords, LDA topic modeling, DBSCAN clustering, and PCA visualization, we provide deep insights into user behavior, engagement patterns, and content performance.</p>
+                <p>Whether you're a brand manager, researcher, or social media enthusiast, our platform empowers you to make data-driven decisions with automated recommendations and optimize your social media strategy based on real-time insights.</p>
+            </div>
+            <div class="about-features">
+                <div class="about-feature-item">
+                    <div class="feature-icon">📊</div>
+                    <h4>Data-Driven Insights</h4>
+                    <p>Comprehensive analytics across sentiment, emotion, topics, and engagement</p>
+                </div>
+                <div class="about-feature-item">
+                    <div class="feature-icon">🤖</div>
+                    <h4>AI-Powered Recommendations</h4>
+                    <p>Automated actionable insights with priority-based recommendations</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="features-section" id="features">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title">Our Features</h2>
+            <p class="section-subtitle">Comprehensive AI-powered tools for social media analysis</p>
+        </div>
+        <div class="features-grid">
+            <div class="feature-card-large">
+                <div class="feature-icon-large">📈</div>
+                <h3>Descriptive Analytics</h3>
+                <p>Comprehensive statistical analysis of your social media posts, including engagement metrics, post frequency, and interaction patterns. Visualize trends with DBSCAN clustering and PCA visualization.</p>
+                <ul class="feature-list">
+                    <li>Real-time engagement metrics tracking</li>
+                    <li>DBSCAN clustering for peak activity hours</li>
+                    <li>Hashtag performance analysis</li>
+                    <li>Interactive scatter plot visualizations</li>
+                </ul>
+            </div>
+
+            <div class="feature-card-large">
+                <div class="feature-icon-large">💭</div>
+                <h3>Sentiment Analysis</h3>
+                <p>Advanced sentiment detection using LinearSVM machine learning model with LDA topic modeling. Analyze positive, negative, and neutral sentiments with word cloud visualization per sentiment category.</p>
+                <ul class="feature-list">
+                    <li>LinearSVM ML model with 95%+ accuracy</li>
+                    <li>LDA topic modeling per sentiment</li>
+                    <li>Sentiment word clouds visualization</li>
+                    <li>Engagement correlation analysis</li>
+                </ul>
+            </div>
+
+            <div class="feature-card-large">
+                <div class="feature-icon-large">😊</div>
+                <h3>Emotion Analysis</h3>
+                <p>Deep emotion detection using rule-based lexicon approach with 600+ emotion keywords and 200+ emojis. Identify joy, anger, sadness, fear, surprise, and disgust emotions with detailed distribution analysis.</p>
+                <ul class="feature-list">
+                    <li>6 emotion categories detection (Joy, Anger, Sadness, Fear, Surprise, Disgust)</li>
+                    <li>600+ emotion keywords + 200+ emojis</li>
+                    <li>Emotion word clouds per category</li>
+                    <li>Engagement by emotion analysis</li>
+                </ul>
+            </div>
+
+            <div class="feature-card-large">
+                <div class="feature-icon-large">🎯</div>
+                <h3>Topic Pillar Analysis</h3>
+                <p>Discover content pillars and themes using LDA (Latent Dirichlet Allocation) topic modeling. Identify high-performing topics, analyze engagement patterns, and explore post details with reply word clouds.</p>
+                <ul class="feature-list">
+                    <li>LDA topic modeling for content pillars</li>
+                    <li>Topic engagement analysis with interactive bar charts</li>
+                    <li>Post detail modal with hashtags and reply word clouds</li>
+                    <li>Retweet and reply metrics per topic</li>
+                </ul>
+            </div>
+
+            <div class="feature-card-large">
+                <div class="feature-icon-large">💡</div>
+                <h3>AI Recommendation System</h3>
+                <p>Get automated actionable insights and recommendations based on comprehensive analysis of sentiment, emotion, topics, engagement, and timing. Priority-based recommendations with impact and effort assessment.</p>
+                <ul class="feature-list">
+                    <li>Automated insights from all analytics</li>
+                    <li>Priority-based recommendations (Critical, High, Medium, Low)</li>
+                    <li>Performance score with rating (0-100 scale)</li>
+                    <li>Actionable steps with impact/effort estimation</li>
+                </ul>
+            </div>
+
+            <div class="feature-card-large">
+                <div class="feature-icon-large">⏰</div>
+                <h3>Peak Activity Analysis</h3>
+                <p>Identify optimal posting times using DBSCAN clustering and temporal analysis. Understand when your audience is most active and maximize engagement by posting at peak hours.</p>
+                <ul class="feature-list">
+                    <li>DBSCAN clustering for peak hour detection</li>
+                    <li>Hourly activity heatmap visualization</li>
+                    <li>Day-of-week engagement patterns</li>
+                    <li>Optimal posting time recommendations</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="cta-section-bottom">
+    <div class="container">
+        <div class="cta-content">
+            <h2>Ready to Transform Your Social Media Strategy?</h2>
+            <p>Start analyzing your data today and get AI-powered recommendations</p>
+            <div class="cta-buttons">
+                <a href="{% url 'analytics:descriptive_analytics' %}" class="btn btn-primary-large">Start Analyzing</a>
+                <a href="{% url 'analytics:recommendations' %}" class="btn btn-secondary-large">Get Recommendations</a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  // Check data status on page load
+  document.addEventListener('DOMContentLoaded', function() {
+    checkDataStatus();
+  });
+
+  async function checkDataStatus() {
+    try {
+      const response = await fetch('http://localhost:8001/api/data-status');
+      const data = await response.json();
+
+      // If data is not ready, show alert
+      if (!data.data_ready) {
+        document.getElementById('dataAlert').style.display = 'block';
+      }
+    } catch (error) {
+      console.error('Error checking data status:', error);
+      // If API is down, assume data might not be ready
+      document.getElementById('dataAlert').style.display = 'block';
+    }
+  }
+</script>
+{% endblock %}

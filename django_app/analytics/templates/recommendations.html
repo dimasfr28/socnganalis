@@ -1,0 +1,423 @@
+{% extends 'base.html' %} {% load static %} {% block title %}Recommendation System - Social Media Analytics{% endblock %} {% block extra_css %}
+<style>
+  .insights-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2.5rem;
+  }
+
+  .insight-card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border-left: 4px solid #3b82f6;
+  }
+
+  .insight-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+  }
+
+  .insight-icon {
+    font-size: 2.5rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .insight-title {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #718096;
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .insight-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #1a202c;
+    margin-bottom: 0.25rem;
+  }
+
+  .insight-description {
+    font-size: 0.9rem;
+    color: #718096;
+  }
+
+  .performance-section {
+    background: white;
+    padding: 2.5rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    margin-bottom: 2.5rem;
+    text-align: center;
+  }
+
+  .performance-score-container {
+    position: relative;
+    width: 200px;
+    height: 200px;
+    margin: 2rem auto;
+  }
+
+  .performance-score-circle {
+    width: 100%;
+    height: 100%;
+  }
+
+  .performance-score-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+  }
+
+  .performance-score-value {
+    font-size: 3rem;
+    font-weight: 700;
+    color: #1a202c;
+    line-height: 1;
+  }
+
+  .performance-score-rating {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-top: 0.5rem;
+  }
+
+  .performance-breakdown {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+    margin-top: 2rem;
+  }
+
+  .performance-metric {
+    text-align: center;
+  }
+
+  .performance-metric-label {
+    font-size: 0.9rem;
+    color: #718096;
+    margin-bottom: 0.5rem;
+  }
+
+  .performance-metric-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1a202c;
+  }
+
+  .priority-actions-section {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    margin-bottom: 2.5rem;
+  }
+
+  .action-card {
+    background: #f7fafc;
+    border-left: 4px solid;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    border-radius: 8px;
+    transition: transform 0.3s ease;
+  }
+
+  .action-card:hover {
+    transform: translateX(5px);
+  }
+
+  .action-card.critical {
+    border-left-color: #ef4444;
+    background: #fef2f2;
+  }
+
+  .action-card.high {
+    border-left-color: #f59e0b;
+    background: #fffbeb;
+  }
+
+  .action-card.medium {
+    border-left-color: #3b82f6;
+    background: #eff6ff;
+  }
+
+  .action-card.low {
+    border-left-color: #10b981;
+    background: #f0fdf4;
+  }
+
+  .action-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+  }
+
+  .action-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #1a202c;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .action-priority-badge {
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .action-priority-badge.critical {
+    background: #ef4444;
+    color: white;
+  }
+
+  .action-priority-badge.high {
+    background: #f59e0b;
+    color: white;
+  }
+
+  .action-priority-badge.medium {
+    background: #3b82f6;
+    color: white;
+  }
+
+  .action-priority-badge.low {
+    background: #10b981;
+    color: white;
+  }
+
+  .action-description {
+    font-size: 0.95rem;
+    color: #4a5568;
+    margin-bottom: 1rem;
+    line-height: 1.6;
+  }
+
+  .action-steps {
+    margin-top: 1rem;
+  }
+
+  .action-steps-title {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #1a202c;
+    margin-bottom: 0.5rem;
+  }
+
+  .action-steps-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .action-steps-list li {
+    padding-left: 1.5rem;
+    margin-bottom: 0.5rem;
+    position: relative;
+    font-size: 0.9rem;
+    color: #4a5568;
+  }
+
+  .action-steps-list li::before {
+    content: "✓";
+    position: absolute;
+    left: 0;
+    color: #10b981;
+    font-weight: bold;
+  }
+
+  .action-impact {
+    display: flex;
+    gap: 2rem;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+  }
+
+  .action-impact-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+  }
+
+  .action-impact-label {
+    font-weight: 600;
+    color: #718096;
+  }
+
+  .action-impact-value {
+    color: #1a202c;
+  }
+
+  .recommendations-section {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    margin-bottom: 2.5rem;
+  }
+
+  .recommendations-filters {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+  }
+
+  .filter-button {
+    padding: 0.5rem 1rem;
+    border: 2px solid #e2e8f0;
+    background: white;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #4a5568;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .filter-button:hover {
+    border-color: #3b82f6;
+    color: #3b82f6;
+  }
+
+  .filter-button.active {
+    border-color: #3b82f6;
+    background: #3b82f6;
+    color: white;
+  }
+
+  .loading-spinner {
+    text-align: center;
+    padding: 3rem;
+  }
+
+  .spinner-border {
+    width: 3rem;
+    height: 3rem;
+  }
+
+  .section-header {
+    margin-bottom: 2rem;
+  }
+
+  .section-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1a202c;
+    margin-bottom: 0.5rem;
+  }
+
+  .section-subtitle {
+    font-size: 1rem;
+    color: #718096;
+  }
+
+  @media (max-width: 768px) {
+    .performance-breakdown {
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+
+    .action-impact {
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+  }
+</style>
+{% endblock %} {% block content %}
+<div class="container" style="padding: 2rem 0">
+  <!-- Page Header -->
+  <div style="margin-bottom: 3rem; text-align: center">
+    <h1 style="font-size: 2.5rem; font-weight: 700; color: #1a202c; margin-bottom: 0.75rem">💡 Recommendation System</h1>
+    <p style="font-size: 1.15rem; color: #718096; max-width: 800px; margin: 0 auto">Automated insights dan actionable recommendations berdasarkan analisis komprehensif sentiment, emotion, topics, engagement, dan timing patterns</p>
+  </div>
+
+  <!-- Key Insights -->
+  <div id="insightsContainer" class="insights-grid">
+    <div class="loading-spinner">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+      <p style="margin-top: 1rem; color: #718096">Loading insights...</p>
+    </div>
+  </div>
+
+  <!-- Performance Score -->
+  <div id="performanceContainer" class="performance-section" style="display: none">
+    <div class="section-header">
+      <h2 class="section-title">Overall Performance Score</h2>
+      <p class="section-subtitle">Comprehensive evaluation across sentiment, emotion, and engagement metrics</p>
+    </div>
+
+    <div class="performance-score-container">
+      <canvas id="performanceScoreChart"></canvas>
+      <div class="performance-score-text">
+        <div id="performanceScoreValue" class="performance-score-value">--</div>
+        <div id="performanceScoreRating" class="performance-score-rating">--</div>
+      </div>
+    </div>
+
+    <div class="performance-breakdown">
+      <div class="performance-metric">
+        <div class="performance-metric-label">Sentiment Score</div>
+        <div id="sentimentScore" class="performance-metric-value">--</div>
+      </div>
+      <div class="performance-metric">
+        <div class="performance-metric-label">Emotion Score</div>
+        <div id="emotionScore" class="performance-metric-value">--</div>
+      </div>
+      <div class="performance-metric">
+        <div class="performance-metric-label">Engagement Score</div>
+        <div id="engagementScore" class="performance-metric-value">--</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Priority Actions -->
+  <div id="priorityActionsContainer" class="priority-actions-section" style="display: none">
+    <div class="section-header">
+      <h2 class="section-title">🎯 Priority Actions</h2>
+      <p class="section-subtitle">Top 5 critical and high priority recommendations requiring immediate attention</p>
+    </div>
+
+    <div id="priorityActionsList"></div>
+  </div>
+
+  <!-- All Recommendations -->
+  <div id="recommendationsContainer" class="recommendations-section" style="display: none">
+    <div class="section-header">
+      <h2 class="section-title">📋 All Recommendations</h2>
+      <p class="section-subtitle">Comprehensive list of actionable recommendations across all categories</p>
+    </div>
+
+    <div class="recommendations-filters">
+      <button class="filter-button active" data-filter="all">All</button>
+      <button class="filter-button" data-filter="Sentiment">Sentiment</button>
+      <button class="filter-button" data-filter="Emotion">Emotion</button>
+      <button class="filter-button" data-filter="Topics">Topics</button>
+      <button class="filter-button" data-filter="Engagement">Engagement</button>
+      <button class="filter-button" data-filter="Timing">Timing</button>
+    </div>
+
+    <div id="recommendationsList"></div>
+  </div>
+</div>
+{% endblock %} {% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="{% static 'js/recommendations.js' %}?v=1.0"></script>
+{% endblock %}

@@ -1,0 +1,689 @@
+{% extends 'base.html' %} {% load static %} {% block title %}Dataset Manager - Social Media Analytics{% endblock %} {% block extra_css %}
+<style>
+  .manager-container {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 2rem;
+  }
+
+  .page-header {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  .page-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #1a202c;
+    margin-bottom: 0.5rem;
+  }
+
+  .page-subtitle {
+    font-size: 1rem;
+    color: #718096;
+  }
+
+  .active-dataset-banner {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 2rem;
+    border-radius: 12px;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  }
+
+  .active-dataset-label {
+    font-size: 0.85rem;
+    opacity: 0.9;
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .active-dataset-name {
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+  }
+
+  .active-dataset-stats {
+    font-size: 0.95rem;
+    opacity: 0.9;
+  }
+
+  .section-card {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    margin-bottom: 2rem;
+  }
+
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #e2e8f0;
+  }
+
+  .section-title {
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: #1a202c;
+  }
+
+  .dataset-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .dataset-card {
+    background: #f7fafc;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 1.5rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+  }
+
+  .dataset-card:hover {
+    border-color: #667eea;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  .dataset-card.active {
+    border-color: #10b981;
+    background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+  }
+
+  .dataset-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+  }
+
+  .dataset-name {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #1a202c;
+  }
+
+  .dataset-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+  }
+
+  .badge-active {
+    background: #10b981;
+    color: white;
+  }
+
+  .badge-default {
+    background: #3b82f6;
+    color: white;
+  }
+
+  .dataset-stats {
+    margin: 0.75rem 0;
+    color: #4a5568;
+    font-size: 0.9rem;
+  }
+
+  .dataset-stat-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.25rem 0;
+  }
+
+  .dataset-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1rem;
+  }
+
+  .btn {
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: none;
+    flex: 1;
+  }
+
+  .btn-primary {
+    background: #667eea;
+    color: white;
+  }
+
+  .btn-primary:hover {
+    background: #5568d3;
+  }
+
+  .btn-danger {
+    background: #ef4444;
+    color: white;
+  }
+
+  .btn-danger:hover {
+    background: #dc2626;
+  }
+
+  .btn-primary:disabled,
+  .btn-danger:disabled {
+    background: #9ca3af;
+    cursor: not-allowed;
+  }
+
+  .upload-form {
+    background: #f7fafc;
+    padding: 1.5rem;
+    border-radius: 8px;
+    border: 2px dashed #cbd5e0;
+  }
+
+  .form-group {
+    margin-bottom: 1.5rem;
+  }
+
+  .form-label {
+    display: block;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #1a202c;
+    margin-bottom: 0.5rem;
+  }
+
+  .form-input {
+    width: 100%;
+    padding: 0.75rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 6px;
+    font-size: 0.95rem;
+  }
+
+  .form-input:focus {
+    outline: none;
+    border-color: #667eea;
+  }
+
+  .file-input-label {
+    display: block;
+    padding: 1rem;
+    background: white;
+    border: 2px dashed #cbd5e0;
+    border-radius: 6px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .file-input-label:hover {
+    border-color: #667eea;
+    background: #f7fafc;
+  }
+
+  .file-input {
+    display: none;
+  }
+
+  .file-name {
+    margin-top: 0.5rem;
+    font-size: 0.85rem;
+    color: #10b981;
+    font-weight: 500;
+  }
+
+  .alert {
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+  }
+
+  .alert-success {
+    background: #d1fae5;
+    color: #065f46;
+    border-left: 4px solid #10b981;
+  }
+
+  .alert-error {
+    background: #fee2e2;
+    color: #991b1b;
+    border-left: 4px solid #ef4444;
+  }
+
+  .alert-info {
+    background: #dbeafe;
+    color: #1e40af;
+    border-left: 4px solid #3b82f6;
+  }
+
+  .progress-bar-container {
+    width: 100%;
+    height: 6px;
+    background: #e2e8f0;
+    border-radius: 3px;
+    overflow: hidden;
+    margin-top: 0.5rem;
+    display: none;
+  }
+
+  .progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #667eea, #764ba2);
+    transition: width 0.3s ease;
+    width: 0%;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 3rem 2rem;
+    color: #718096;
+  }
+
+  .empty-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+  }
+</style>
+{% endblock %} {% block content %}
+<div class="manager-container">
+  <!-- Header -->
+  <div class="page-header">
+    <h1 class="page-title">📊 Dataset Manager</h1>
+    <p class="page-subtitle">Kelola dan switch dataset untuk analisis</p>
+  </div>
+
+  <!-- Alert Container -->
+  <div id="alertContainer"></div>
+
+  <!-- Active Dataset Banner -->
+  <div class="active-dataset-banner">
+    <div class="active-dataset-label">Dataset Aktif Saat Ini</div>
+    <div class="active-dataset-name" id="activeDatasetName">Loading...</div>
+    <div class="active-dataset-stats" id="activeDatasetStats">Checking...</div>
+  </div>
+
+  <!-- Available Datasets Section -->
+  <div class="section-card">
+    <div class="section-header">
+      <h2 class="section-title">Datasets Tersedia</h2>
+      <button class="btn btn-primary" onclick="document.getElementById('uploadSection').scrollIntoView({behavior: 'smooth'})">
+        + Upload Dataset Baru
+      </button>
+    </div>
+
+    <div id="datasetGrid" class="dataset-grid">
+      <!-- Datasets will be loaded here -->
+    </div>
+
+    <div id="emptyState" class="empty-state" style="display: none">
+      <div class="empty-icon">📂</div>
+      <h3>Belum Ada Dataset</h3>
+      <p>Upload dataset pertama Anda untuk memulai analisis</p>
+    </div>
+  </div>
+
+  <!-- Upload Section -->
+  <div class="section-card" id="uploadSection">
+    <div class="section-header">
+      <h2 class="section-title">Upload Dataset Baru</h2>
+    </div>
+
+    <div class="alert alert-info" style="font-size: 0.9rem">
+      <strong>💡 Tip:</strong> Upload dataset baru tidak akan menghapus dataset yang sudah ada. Anda bisa switch antara dataset kapan saja.
+    </div>
+
+    <form id="uploadForm" class="upload-form">
+      <!-- Dataset Name -->
+      <div class="form-group">
+        <label class="form-label">Nama Dataset</label>
+        <input
+          type="text"
+          id="datasetName"
+          class="form-input"
+          placeholder="Contoh: campaign_january, data_backup_2024"
+          pattern="[a-zA-Z0-9_]+"
+          required
+        />
+        <p style="font-size: 0.85rem; color: #718096; margin-top: 0.5rem">
+          Gunakan huruf, angka, dan underscore saja. Tidak boleh menggunakan spasi.
+        </p>
+      </div>
+
+      <!-- Tweet File -->
+      <div class="form-group">
+        <label class="form-label">File Tweet (Excel)</label>
+        <label for="tweetFile" class="file-input-label">
+          📊 Pilih file tweet.xlsx
+        </label>
+        <input type="file" id="tweetFile" class="file-input" accept=".xlsx,.xls" required />
+        <div id="tweetFileName" class="file-name"></div>
+      </div>
+
+      <!-- Replies File -->
+      <div class="form-group">
+        <label class="form-label">File Replies (CSV)</label>
+        <label for="repliesFile" class="file-input-label">
+          💬 Pilih file replies.csv
+        </label>
+        <input type="file" id="repliesFile" class="file-input" accept=".csv" required />
+        <div id="repliesFileName" class="file-name"></div>
+      </div>
+
+      <div class="progress-bar-container" id="uploadProgress">
+        <div class="progress-bar" id="uploadProgressBar"></div>
+      </div>
+
+      <button type="submit" class="btn btn-primary" id="uploadBtn" style="width: 100%; padding: 1rem">
+        📤 Upload Dataset
+      </button>
+    </form>
+  </div>
+</div>
+{% endblock %} {% block extra_js %}
+<script>
+  let currentDatasets = [];
+  let activeDataset = null;
+
+  document.addEventListener("DOMContentLoaded", function () {
+    loadDatasets();
+
+    // Setup file inputs
+    document.getElementById("tweetFile").addEventListener("change", function (e) {
+      document.getElementById("tweetFileName").textContent = e.target.files[0] ? "✓ " + e.target.files[0].name : "";
+    });
+
+    document.getElementById("repliesFile").addEventListener("change", function (e) {
+      document.getElementById("repliesFileName").textContent = e.target.files[0] ? "✓ " + e.target.files[0].name : "";
+    });
+
+    // Setup form submit
+    document.getElementById("uploadForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+      uploadDataset();
+    });
+  });
+
+  async function loadDatasets() {
+    try {
+      const response = await fetch("http://localhost:8001/api/list-datasets");
+      const data = await response.json();
+
+      if (data.success) {
+        currentDatasets = data.datasets || [];
+        activeDataset = data.active_dataset;
+
+        // Update active dataset banner
+        updateActiveBanner();
+
+        // Render datasets
+        renderDatasets();
+      }
+    } catch (error) {
+      console.error("Error loading datasets:", error);
+      showAlert("error", "Gagal memuat datasets: " + error.message);
+    }
+  }
+
+  function updateActiveBanner() {
+    const activeDs = currentDatasets.find((d) => d.is_active);
+    if (activeDs) {
+      document.getElementById("activeDatasetName").textContent = activeDs.display_name || activeDs.name;
+      document.getElementById("activeDatasetStats").textContent = `${activeDs.total_tweets} tweets • ${activeDs.total_replies} replies`;
+    } else {
+      document.getElementById("activeDatasetName").textContent = "Tidak ada dataset aktif";
+      document.getElementById("activeDatasetStats").textContent = "Silakan upload atau pilih dataset";
+    }
+  }
+
+  function renderDatasets() {
+    const grid = document.getElementById("datasetGrid");
+    const emptyState = document.getElementById("emptyState");
+
+    if (currentDatasets.length === 0) {
+      grid.style.display = "none";
+      emptyState.style.display = "block";
+      return;
+    }
+
+    grid.style.display = "grid";
+    emptyState.style.display = "none";
+    grid.innerHTML = "";
+
+    currentDatasets.forEach((dataset) => {
+      const card = createDatasetCard(dataset);
+      grid.appendChild(card);
+    });
+  }
+
+  function createDatasetCard(dataset) {
+    const card = document.createElement("div");
+    card.className = "dataset-card" + (dataset.is_active ? " active" : "");
+
+    const header = document.createElement("div");
+    header.className = "dataset-card-header";
+
+    const name = document.createElement("div");
+    name.className = "dataset-name";
+    name.textContent = dataset.display_name || dataset.name;
+
+    const badges = document.createElement("div");
+    if (dataset.is_active) {
+      const badge = document.createElement("span");
+      badge.className = "dataset-badge badge-active";
+      badge.textContent = "ACTIVE";
+      badges.appendChild(badge);
+    } else if (dataset.name === "default") {
+      const badge = document.createElement("span");
+      badge.className = "dataset-badge badge-default";
+      badge.textContent = "BASE";
+      badges.appendChild(badge);
+    }
+
+    header.appendChild(name);
+    header.appendChild(badges);
+
+    const stats = document.createElement("div");
+    stats.className = "dataset-stats";
+    stats.innerHTML = `
+      <div class="dataset-stat-item">
+        <span>Tweets:</span>
+        <strong>${dataset.total_tweets}</strong>
+      </div>
+      <div class="dataset-stat-item">
+        <span>Replies:</span>
+        <strong>${dataset.total_replies}</strong>
+      </div>
+      ${dataset.created_at ? `<div class="dataset-stat-item"><span>Dibuat:</span><small>${new Date(dataset.created_at).toLocaleDateString("id-ID")}</small></div>` : ""}
+    `;
+
+    const actions = document.createElement("div");
+    actions.className = "dataset-actions";
+
+    if (!dataset.is_active) {
+      const switchBtn = document.createElement("button");
+      switchBtn.className = "btn btn-primary";
+      switchBtn.textContent = "Gunakan";
+      switchBtn.onclick = (e) => {
+        e.stopPropagation();
+        switchDataset(dataset.name);
+      };
+      actions.appendChild(switchBtn);
+    }
+
+    if (dataset.name !== "default" && !dataset.is_active) {
+      const deleteBtn = document.createElement("button");
+      deleteBtn.className = "btn btn-danger";
+      deleteBtn.textContent = "Hapus";
+      deleteBtn.onclick = (e) => {
+        e.stopPropagation();
+        deleteDataset(dataset.name);
+      };
+      actions.appendChild(deleteBtn);
+    }
+
+    card.appendChild(header);
+    card.appendChild(stats);
+    if (actions.children.length > 0) {
+      card.appendChild(actions);
+    }
+
+    return card;
+  }
+
+  async function switchDataset(datasetName) {
+    try {
+      const response = await fetch(`http://localhost:8001/api/select-dataset/${datasetName}`, {
+        method: "POST",
+      });
+
+      const result = await response.json();
+
+      if (response.ok && result.success) {
+        showAlert("success", "✓ " + result.message);
+        await loadDatasets();
+      } else {
+        throw new Error(result.detail || result.message || "Gagal switch dataset");
+      }
+    } catch (error) {
+      console.error("Switch error:", error);
+      showAlert("error", "Gagal switch dataset: " + error.message);
+    }
+  }
+
+  async function deleteDataset(datasetName) {
+    if (!confirm(`Hapus dataset "${datasetName}"? Data akan dihapus permanen.`)) {
+      return;
+    }
+
+    try {
+      const response = await fetch(`http://localhost:8001/api/delete-dataset/${datasetName}`, {
+        method: "DELETE",
+      });
+
+      const result = await response.json();
+
+      if (response.ok && result.success) {
+        showAlert("success", "✓ Dataset berhasil dihapus");
+        await loadDatasets();
+      } else {
+        throw new Error(result.detail || result.message || "Gagal hapus dataset");
+      }
+    } catch (error) {
+      console.error("Delete error:", error);
+      showAlert("error", "Gagal hapus dataset: " + error.message);
+    }
+  }
+
+  async function uploadDataset() {
+    const datasetName = document.getElementById("datasetName").value.trim();
+    const tweetFile = document.getElementById("tweetFile").files[0];
+    const repliesFile = document.getElementById("repliesFile").files[0];
+    const button = document.getElementById("uploadBtn");
+    const progress = document.getElementById("uploadProgress");
+    const progressBar = document.getElementById("uploadProgressBar");
+
+    if (!datasetName || !tweetFile || !repliesFile) {
+      showAlert("error", "Semua field harus diisi");
+      return;
+    }
+
+    if (!/^[a-zA-Z0-9_]+$/.test(datasetName)) {
+      showAlert("error", "Nama dataset hanya boleh mengandung huruf, angka, dan underscore");
+      return;
+    }
+
+    if (datasetName.toLowerCase() === "default") {
+      showAlert("error", "Tidak bisa menggunakan 'default' sebagai nama dataset");
+      return;
+    }
+
+    button.disabled = true;
+    button.textContent = "⏳ Uploading...";
+    progress.style.display = "block";
+    progressBar.style.width = "0%";
+
+    const formData = new FormData();
+    formData.append("dataset_name", datasetName);
+    formData.append("tweet_file", tweetFile);
+    formData.append("replies_file", repliesFile);
+
+    try {
+      let progressValue = 0;
+      const progressInterval = setInterval(() => {
+        progressValue += 10;
+        if (progressValue <= 90) {
+          progressBar.style.width = progressValue + "%";
+        }
+      }, 200);
+
+      const response = await fetch("http://localhost:8001/api/upload-dataset", {
+        method: "POST",
+        body: formData,
+      });
+
+      clearInterval(progressInterval);
+
+      const result = await response.json();
+
+      if (response.ok && result.success) {
+        progressBar.style.width = "100%";
+        showAlert("success", "✓ " + result.message);
+
+        setTimeout(() => {
+          document.getElementById("uploadForm").reset();
+          document.getElementById("tweetFileName").textContent = "";
+          document.getElementById("repliesFileName").textContent = "";
+          button.disabled = false;
+          button.textContent = "📤 Upload Dataset";
+          progress.style.display = "none";
+          progressBar.style.width = "0%";
+
+          loadDatasets();
+          document.getElementById("datasetGrid").scrollIntoView({ behavior: "smooth" });
+        }, 2000);
+      } else {
+        throw new Error(result.detail || result.message || "Upload gagal");
+      }
+    } catch (error) {
+      console.error("Upload error:", error);
+      showAlert("error", "Upload gagal: " + error.message);
+
+      button.disabled = false;
+      button.textContent = "📤 Upload Dataset";
+      progress.style.display = "none";
+      progressBar.style.width = "0%";
+    }
+  }
+
+  function showAlert(type, message) {
+    const container = document.getElementById("alertContainer");
+    const alert = document.createElement("div");
+    alert.className = `alert alert-${type}`;
+    alert.textContent = message;
+    container.innerHTML = "";
+    container.appendChild(alert);
+
+    setTimeout(() => {
+      alert.style.transition = "opacity 0.5s ease";
+      alert.style.opacity = "0";
+      setTimeout(() => {
+        if (alert.parentNode) {
+          alert.parentNode.removeChild(alert);
+        }
+      }, 500);
+    }, 5000);
+  }
+</script>
+{% endblock %}

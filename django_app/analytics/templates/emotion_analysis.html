@@ -1,0 +1,359 @@
+{% extends 'base.html' %} {% load static %} {% block title %}Emotion Analysis - Social Media Analytics{% endblock %} {% block extra_css %}
+<style>
+  .emotion-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 1.2rem;
+    margin-bottom: 2.5rem;
+  }
+
+  @media (max-width: 1200px) {
+    .emotion-cards-grid {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+
+  @media (max-width: 768px) {
+    .emotion-cards-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  .emotion-card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border-top: 4px solid;
+  }
+
+  .emotion-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+  }
+
+  .emotion-card.joy {
+    border-top-color: #fbbf24;
+  }
+  .emotion-card.anger {
+    border-top-color: #ef4444;
+  }
+  .emotion-card.sadness {
+    border-top-color: #3b82f6;
+  }
+  .emotion-card.fear {
+    border-top-color: #a855f7;
+  }
+  .emotion-card.surprise {
+    border-top-color: #ec4899;
+  }
+  .emotion-card.disgust {
+    border-top-color: #22c55e;
+  }
+  .emotion-card.neutral {
+    border-top-color: #6b7280;
+  }
+
+  .emotion-icon {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .emotion-name {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #4a5568;
+    margin-bottom: 0.5rem;
+    text-transform: capitalize;
+  }
+
+  .emotion-count {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #1a202c;
+    margin-bottom: 0.25rem;
+  }
+
+  .emotion-percentage {
+    font-size: 0.85rem;
+    color: #718096;
+  }
+
+  .charts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+    gap: 2rem;
+    margin-bottom: 2.5rem;
+  }
+
+  .chart-container {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  }
+
+  .chart-header {
+    margin-bottom: 1.5rem;
+  }
+
+  .chart-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #1a202c;
+    margin-bottom: 0.5rem;
+  }
+
+  .chart-subtitle {
+    font-size: 0.9rem;
+    color: #718096;
+  }
+
+  .chart-canvas {
+    position: relative;
+    height: 350px;
+  }
+
+  .wordcloud-section {
+    margin-top: 2.5rem;
+  }
+
+  .section-header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+  }
+
+  .section-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #1a202c;
+    margin-bottom: 0.5rem;
+  }
+
+  .section-subtitle {
+    font-size: 1.1rem;
+    color: #718096;
+  }
+
+  .wordcloud-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 2rem;
+  }
+
+  .wordcloud-container {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    border-top: 4px solid;
+  }
+
+  .wordcloud-container.joy {
+    border-top-color: #fbbf24;
+  }
+  .wordcloud-container.anger {
+    border-top-color: #ef4444;
+  }
+  .wordcloud-container.sadness {
+    border-top-color: #3b82f6;
+  }
+  .wordcloud-container.fear {
+    border-top-color: #a855f7;
+  }
+  .wordcloud-container.surprise {
+    border-top-color: #ec4899;
+  }
+  .wordcloud-container.disgust {
+    border-top-color: #22c55e;
+  }
+
+  .wordcloud-header {
+    margin-bottom: 1.5rem;
+  }
+
+  .wordcloud-header h6 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #1a202c;
+    margin-bottom: 0.25rem;
+  }
+
+  .wordcloud-header p {
+    font-size: 0.85rem;
+    color: #718096;
+    margin: 0;
+  }
+
+  .wordcloud-canvas {
+    min-height: 220px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+    padding: 1.5rem;
+    background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+    border-radius: 8px;
+  }
+
+  .loading-spinner {
+    text-align: center;
+    padding: 3rem;
+  }
+
+  .spinner-border {
+    width: 3rem;
+    height: 3rem;
+  }
+
+  .analytics-section {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    margin-bottom: 2rem;
+  }
+
+  .classic-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: "Montserrat", sans-serif;
+  }
+
+  .classic-table tr {
+    border-bottom: 1px solid #e2e8f0;
+  }
+
+  .classic-table tr:last-child {
+    border-bottom: none;
+  }
+
+  .classic-table td {
+    padding: 0.75rem 1rem;
+    color: #4a5568;
+    font-size: 0.95rem;
+  }
+
+  .classic-table td:first-child {
+    font-weight: 600;
+    color: #1a202c;
+  }
+
+  .classic-table td:last-child {
+    text-align: right;
+    font-weight: 600;
+    color: #2d3748;
+  }
+</style>
+{% endblock %} {% block content %}
+<div class="container" style="padding: 2rem 0">
+  <!-- Page Header -->
+  <div style="margin-bottom: 3rem; text-align: center">
+    <h1 style="font-size: 2.5rem; font-weight: 700; color: #1a202c; margin-bottom: 0.75rem">😊 Emotion Analysis</h1>
+    <p style="font-size: 1.15rem; color: #718096; max-width: 700px; margin: 0 auto">Analisis mendalam tentang emosi dalam interaksi sosial media menggunakan rule-based lexicon approach</p>
+  </div>
+
+  <!-- Emotion Summary Cards -->
+  <div id="emotionCardsContainer" class="emotion-cards-grid">
+    <div class="loading-spinner">
+      <div class="spinner-border text-warning" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+      <p style="margin-top: 1rem; color: #718096">Loading emotion data...</p>
+    </div>
+  </div>
+
+  <!-- Emotion Distribution Chart with Table -->
+  <div class="analytics-section" style="margin-bottom: 2.5rem">
+    <h5 style="font-size: 1.2rem; font-weight: 600; color: #1a202c; margin-bottom: 0.5rem">Emotion Distribution</h5>
+    <p style="color: #718096; font-size: 0.9rem">Distribusi emosi dalam interaksi pengguna</p>
+    <div style="display: grid; grid-template-columns: 400px 1fr; gap: 4rem; align-items: center; margin-top: 2rem">
+      <div style="display: flex; justify-content: center">
+        <canvas id="emotionDistributionChart" style="max-width: 360px; max-height: 380px"></canvas>
+      </div>
+      <div>
+        <table class="classic-table" id="emotionDistributionTable"></table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Emotion by Engagement Chart -->
+  <div class="analytics-section">
+    <h5 style="font-size: 1.2rem; font-weight: 600; color: #1a202c; margin-bottom: 0.5rem">Emotion by Engagement</h5>
+    <p style="color: #718096; font-size: 0.9rem">Total engagement (likes + replies + retweets) per emosi</p>
+    <div style="margin-top: 2rem; height: 400px">
+      <canvas id="emotionEngagementChart"></canvas>
+    </div>
+  </div>
+
+  <!-- Word Clouds Section -->
+  <div class="wordcloud-section">
+    <div class="section-header">
+      <h2 class="section-title">Word Clouds per Emotion</h2>
+      <p class="section-subtitle">Kata-kata yang paling sering muncul pada setiap kategori emosi</p>
+    </div>
+
+    <div class="wordcloud-grid">
+      <!-- Joy Word Cloud -->
+      <div class="wordcloud-container joy">
+        <div class="wordcloud-header">
+          <h6>😊 Joy (Kegembiraan)</h6>
+          <p>Kata-kata yang mencerminkan kebahagiaan dan kepuasan</p>
+        </div>
+        <div id="wordcloud-joy" class="wordcloud-canvas"></div>
+      </div>
+
+      <!-- Anger Word Cloud -->
+      <div class="wordcloud-container anger">
+        <div class="wordcloud-header">
+          <h6>😡 Anger (Kemarahan)</h6>
+          <p>Kata-kata yang mencerminkan kekesalan dan amarah</p>
+        </div>
+        <div id="wordcloud-anger" class="wordcloud-canvas"></div>
+      </div>
+
+      <!-- Sadness Word Cloud -->
+      <div class="wordcloud-container sadness">
+        <div class="wordcloud-header">
+          <h6>😢 Sadness (Kesedihan)</h6>
+          <p>Kata-kata yang mencerminkan kekecewaan dan kesedihan</p>
+        </div>
+        <div id="wordcloud-sadness" class="wordcloud-canvas"></div>
+      </div>
+
+      <!-- Fear Word Cloud -->
+      <div class="wordcloud-container fear">
+        <div class="wordcloud-header">
+          <h6>😨 Fear (Ketakutan)</h6>
+          <p>Kata-kata yang mencerminkan kekhawatiran dan kecemasan</p>
+        </div>
+        <div id="wordcloud-fear" class="wordcloud-canvas"></div>
+      </div>
+
+      <!-- Surprise Word Cloud -->
+      <div class="wordcloud-container surprise">
+        <div class="wordcloud-header">
+          <h6>😲 Surprise (Kejutan)</h6>
+          <p>Kata-kata yang mencerminkan keterkejutan</p>
+        </div>
+        <div id="wordcloud-surprise" class="wordcloud-canvas"></div>
+      </div>
+
+      <!-- Disgust Word Cloud -->
+      <div class="wordcloud-container disgust">
+        <div class="wordcloud-header">
+          <h6>🤢 Disgust (Jijik)</h6>
+          <p>Kata-kata yang mencerminkan rasa jijik</p>
+        </div>
+        <div id="wordcloud-disgust" class="wordcloud-canvas"></div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %} {% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="{% static 'js/emotion.js' %}?v=2.4"></script>
+{% endblock %}

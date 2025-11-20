@@ -1,0 +1,71 @@
+{% extends "base.html" %} {% load static %} {% block title %}Topic Pillar Analysis - Social Media Analytics{% endblock %} {% block extra_css %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %} {% block content %}
+<main class="container">
+  <!-- Header -->
+  <div style="margin-bottom: 3rem; margin-top: 2rem">
+    <h2 style="color: var(--dark-gray); font-size: 2rem; margin-bottom: 0.5rem">Topic Pillar Analysis</h2>
+    <p style="color: #718096; font-size: 1.1rem">Discover key topics from your social media content using LDA topic modeling</p>
+  </div>
+
+  <!-- Topics Overview -->
+  <div class="analytics-section">
+    <h5>Discovered Topics</h5>
+    <p style="color: #718096; margin-top: 0.5rem">Automatically extracted topics based on optimal K evaluation</p>
+    <div id="topics-grid" class="topics-grid" style="margin-top: 2rem">
+      <!-- Topics will be loaded here -->
+    </div>
+  </div>
+
+  <!-- Engagement by Topic Chart -->
+  <div class="analytics-section">
+    <h5>Engagement by Topic</h5>
+    <p style="color: #718096; margin-top: 0.5rem">Total engagement (Likes + Replies + Retweets) for each topic</p>
+    <div style="margin-top: 2rem">
+      <canvas id="topicEngagementChart" style="max-height: 400px"></canvas>
+    </div>
+  </div>
+
+  <!-- Topic Filter -->
+  <div class="analytics-section">
+    <h5>Filter by Topic</h5>
+    <p style="color: #718096; margin-top: 0.5rem">Select a topic to filter posts, or view all posts from all topics</p>
+    <div style="margin-top: 1.5rem">
+      <select id="topicFilter" class="topic-filter-select">
+        <!-- Options will be populated by JavaScript -->
+      </select>
+    </div>
+  </div>
+
+  <!-- Posts Grid -->
+  <div class="analytics-section" id="postsSection">
+    <h5 id="postsTitle">All Posts</h5>
+    <p style="color: #718096; margin-top: 0.5rem">Posts sorted by topic strength score</p>
+    <div id="postsGrid" class="posts-grid" style="margin-top: 2rem">
+      <!-- Post cards will be loaded here -->
+    </div>
+  </div>
+</main>
+
+<!-- Bootstrap Modal for Post Detail -->
+<div class="modal fade" id="postModal" tabindex="-1" aria-labelledby="postModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="postModalLabel">Post Details</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" id="modalBody">
+        <div class="text-center py-5">
+          <div class="spinner-border text-warning" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+          <p class="mt-3 text-muted">Loading post details...</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %} {% block extra_js %}
+<script src="{% static 'js/topic_pillar.js' %}?v=1.6"></script>
+{% endblock %}
