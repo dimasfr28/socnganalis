@@ -242,7 +242,11 @@ def analyze_topic_pillars(tweet_file_path):
     df['id_str'] = df['Permalink'].apply(extract_id_from_permalink)
 
     # Load replies data for retweet counting
-    replies_path = '/home/dimas/crawling_sosmed/tweets-data/replies.csv'
+    # Get replies path from same directory as tweet file
+    import os
+    tweet_dir = os.path.dirname(tweet_file_path)
+    replies_path = os.path.join(tweet_dir, 'replies.csv')
+
     try:
         df_replies = pd.read_csv(replies_path)
         print(f"Loaded {len(df_replies)} replies from {replies_path}")
@@ -303,9 +307,9 @@ def analyze_topic_pillars(tweet_file_path):
             top_posts.append({
                 'id_str': str(row.get('Permalink', '')),
                 'full_text': str(row['Caption']),
-                'likes': int(row['Likes']) if 'Likes' in row else 0,
+                'likes': int(row['Likes']) if pd.notna(row.get('Likes')) else 0,
                 'replies': reply_count,  # From CSV
-                'retweets': int(row['Retweets']) if 'Retweets' in row else 0,  # From tweet.xlsx
+                'retweets': int(row['Retweets']) if pd.notna(row.get('Retweets')) else 0,  # From tweet.xlsx
                 'tweet_type': str(row.get('Tweet Type', 'Unknown')),
                 'topic_strength': float(row['topic_strength']),
                 'created_at': str(row.get('Date', ''))
@@ -353,8 +357,11 @@ def get_post_detail(tweet_file_path, permalink):
         # Extract id_str from permalink
         id_str = extract_id_from_permalink(permalink)
 
-        # Load replies data
-        replies_path = '/home/dimas/crawling_sosmed/tweets-data/replies.csv'
+        # Load replies data from same directory as tweet file
+        import os
+        tweet_dir = os.path.dirname(tweet_file_path)
+        replies_path = os.path.join(tweet_dir, 'replies.csv')
+
         try:
             df_replies = pd.read_csv(replies_path)
 
@@ -399,9 +406,9 @@ def get_post_detail(tweet_file_path, permalink):
             'hashtags': hashtags,
             'wordcloud_data': wordcloud_data,
             'reply_count': reply_count,  # Count from CSV
-            'likes': int(post_row['Likes']) if 'Likes' in post_row else 0,
+            'likes': int(post_row['Likes']) if pd.notna(post_row.get('Likes')) else 0,
             'replies': reply_count,  # Replies from CSV
-            'retweets': int(post_row['Retweets']) if 'Retweets' in post_row else 0,  # From tweet.xlsx
+            'retweets': int(post_row['Retweets']) if pd.notna(post_row.get('Retweets')) else 0,  # From tweet.xlsx
             'tweet_type': str(post_row.get('Tweet Type', 'Unknown')),
             'date': str(post_row.get('Date', ''))
         }

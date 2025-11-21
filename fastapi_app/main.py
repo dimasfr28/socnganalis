@@ -60,9 +60,6 @@ os.makedirs(f"{DATASETS_PATH}/default", exist_ok=True)
 # Global variable to track active dataset
 ACTIVE_DATASET = "default"
 
-# create a shared data processor instance
-dp = DataProcessor(DATA_PATH)
-
 def get_active_dataset_path():
     """Get the file paths for the currently active dataset"""
     global ACTIVE_DATASET
@@ -190,7 +187,8 @@ def get_peak_hours():
 def get_popular_hashtags():
     """Extract and return most popular hashtags"""
     try:
-        df_tweets = pd.read_excel(f"{DATA_PATH}/tweet.xlsx", header=4)
+        dataset_paths = get_active_dataset_path()
+        df_tweets = pd.read_excel(dataset_paths['tweet_file'], header=4)
         
         hashtags = []
         for caption in df_tweets['Caption']:
@@ -212,7 +210,8 @@ def get_popular_hashtags():
 def get_engagement_by_day():
     """Get engagement by day of week"""
     try:
-        df_tweets = pd.read_excel(f"{DATA_PATH}/tweet.xlsx", header=4)
+        dataset_paths = get_active_dataset_path()
+        df_tweets = pd.read_excel(dataset_paths['tweet_file'], header=4)
         
         # Parse dates and calculate engagement
         day_names = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
@@ -291,6 +290,15 @@ def get_clustering_pca():
 def get_peak_activity_hours_detailed():
     """Get detailed peak activity hours analysis with DBSCAN clustering and PCA visualization"""
     try:
+        # Get active dataset path
+        dataset_paths = get_active_dataset_path()
+
+        # Create DataProcessor instance with active dataset path
+        if ACTIVE_DATASET == "default":
+            dp = DataProcessor(DATA_PATH)
+        else:
+            dp = DataProcessor(f"{DATASETS_PATH}/{ACTIVE_DATASET}")
+
         result = dp.get_peak_activity_hours()
         return result
     except Exception as e:
@@ -307,8 +315,9 @@ def get_sentiment_analysis():
         if sentiment_processor is None:
             return {"error": "SentimentProcessor not initialized"}
 
-        # Load replies data
-        df = pd.read_csv(f"{DATA_PATH}/replies.csv")
+        # Load replies data from active dataset
+        dataset_paths = get_active_dataset_path()
+        df = pd.read_csv(dataset_paths['replies_file'])
 
         # Analyze sentiment using SentimentProcessor
         df = sentiment_processor.analyze_dataframe(df, text_column='full_text')
@@ -334,8 +343,9 @@ def get_emotion_analysis():
         # Initialize emotion processor
         emotion_processor = EmotionProcessor()
 
-        # Load replies data
-        df = pd.read_csv(f"{DATA_PATH}/replies.csv")
+        # Load replies data from active dataset
+        dataset_paths = get_active_dataset_path()
+        df = pd.read_csv(dataset_paths['replies_file'])
 
         # Analyze emotion
         df = emotion_processor.analyze_dataframe(df, text_column='full_text')
@@ -357,6 +367,12 @@ def get_emotion_analysis():
 def get_analytics():
     """Combined analytics payload for frontend consumption (processed in Python)."""
     try:
+        # Create DataProcessor instance with active dataset path
+        if ACTIVE_DATASET == "default":
+            dp = DataProcessor(DATA_PATH)
+        else:
+            dp = DataProcessor(f"{DATASETS_PATH}/{ACTIVE_DATASET}")
+
         basic = dp.get_statistics_with_delta()
         by_type = dp.get_engagement_by_type()
         hashtags = dp.get_top_hashtags()
@@ -389,8 +405,9 @@ def get_analytics():
 def get_topic_pillars():
     """Topic Pillar Analysis dengan LDA topic modeling"""
     try:
-        # Path to tweet.xlsx
-        tweet_file = f"{DATA_PATH}/tweet.xlsx"
+        # Get active dataset path
+        dataset_paths = get_active_dataset_path()
+        tweet_file = dataset_paths['tweet_file']
 
         # Perform topic pillar analysis
         result = analyze_topic_pillars(tweet_file)
@@ -405,8 +422,9 @@ def get_topic_pillars():
 def get_post_detail_api(permalink: str):
     """Get detailed information for a specific post including hashtags and reply word cloud"""
     try:
-        # Path to tweet.xlsx
-        tweet_file = f"{DATA_PATH}/tweet.xlsx"
+        # Get active dataset path
+        dataset_paths = get_active_dataset_path()
+        tweet_file = dataset_paths['tweet_file']
 
         # Get post detail
         result = get_post_detail(tweet_file, permalink)
@@ -421,22 +439,25 @@ def get_post_detail_api(permalink: str):
 def get_data_status():
     """Check status data dan kesiapan platform"""
     try:
-        # Check default (base) data
-        tweet_exists = os.path.exists(f"{DATA_PATH}/tweet.xlsx")
-        replies_exists = os.path.exists(f"{DATA_PATH}/replies.csv")
+        # Get active dataset paths
+        dataset_paths = get_active_dataset_path()
 
-        # Get file stats for base data
+        # Check if active dataset files exist
+        tweet_exists = os.path.exists(dataset_paths['tweet_file'])
+        replies_exists = os.path.exists(dataset_paths['replies_file'])
+
+        # Get file stats for ACTIVE dataset
         file_stats = {}
         if tweet_exists:
             try:
-                df_tweets = pd.read_excel(f"{DATA_PATH}/tweet.xlsx", header=4)
+                df_tweets = pd.read_excel(dataset_paths['tweet_file'], header=4)
                 file_stats['total_tweets'] = len(df_tweets)
             except Exception:
                 file_stats['total_tweets'] = None
 
         if replies_exists:
             try:
-                df_replies = pd.read_csv(f"{DATA_PATH}/replies.csv")
+                df_replies = pd.read_csv(dataset_paths['replies_file'])
                 file_stats['total_replies'] = len(df_replies)
             except Exception:
                 file_stats['total_replies'] = None
@@ -726,6 +747,12 @@ def get_recommendations():
 
         # Get topic pillar data
         topic_data = analyze_topic_pillars(tweet_file)
+
+        # Create DataProcessor instance with active dataset path
+        if ACTIVE_DATASET == "default":
+            dp = DataProcessor(DATA_PATH)
+        else:
+            dp = DataProcessor(f"{DATASETS_PATH}/{ACTIVE_DATASET}")
 
         # Get engagement data
         engagement_data = dp.get_statistics_with_delta()
