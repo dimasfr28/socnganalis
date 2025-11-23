@@ -131,6 +131,18 @@ AI-generated recommendations berdasarkan data:
 
 ---
 
+## 👥 Kontributor
+
+| Nama | NRP |
+|------|-----|
+| Dimas Firmansyah | 3323600034 |
+| Adriyans Jusa Hutapea | 3323600052 |
+| Afif Hanifuddin | 3323600050 |
+| M. Ariel Sulton | 3323600054 |
+| Najiyah Al Mujahidah | 3323600044 |
+
+---
+
 ## 🏗️ Arsitektur
 
 ```mermaid
@@ -689,7 +701,7 @@ docker compose up -d fastapi
 
 ### ⭐ Star this repo if you find it helpful!
 
-Made with ❤️ by Dimas - Afief - Jusa -ariel
+Made with ❤️ by Tim SOC-NGANALIS
 
 <img src="https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png" width="100%">
 
