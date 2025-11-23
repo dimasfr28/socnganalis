@@ -206,8 +206,8 @@ graph LR
 #### 1️⃣ Clone Repository
 
 ```bash
-git clone https://github.com/yourusername/crawling_sosmed.git
-cd crawling_sosmed
+git clone https://github.com/yourusername/socnganalis.git
+cd socnganalis
 ```
 
 #### 2️⃣ Setup Environment Variables
@@ -225,11 +225,11 @@ nano .env
 TWITTER_AUTH_TOKEN=your_twitter_auth_token_here
 
 # Data Paths
-DATA_PATH=/home/dimas/crawling_sosmed/tweets-data
+DATA_PATH=/home/dimas/socnganalis/tweets-data
 
 # Model Paths
-MODEL_PATH=/home/dimas/crawling_sosmed/assets/model/LinearSVM.pkl
-VECTORIZER_PATH=/home/dimas/crawling_sosmed/assets/model/tfidf_vectorizer.pkl
+MODEL_PATH=/home/dimas/socnganalis/assets/model/LinearSVM.pkl
+VECTORIZER_PATH=/home/dimas/socnganalis/assets/model/tfidf_vectorizer.pkl
 ```
 
 #### 3️⃣ Jalankan dengan Docker
@@ -254,7 +254,49 @@ docker compose up -d --build
 
 ## 📱 Panduan Penggunaan
 
-### 🔍 1. Scraping Data Twitter
+### 📥 1. Mendapatkan Data Posts (Sebelum Scraping)
+
+Karena kami tidak memiliki akses API Twitter/X, data posts utama diambil secara manual melalui **Social Insider**.
+
+#### **Langkah-langkah:**
+
+**Step 1: Export Data dari Social Insider**
+1. Login ke [socialinsider.io](https://socialinsider.io)
+2. Pilih akun Twitter/X yang ingin dianalisis
+3. Navigasi ke menu **Posts**
+4. Klik **Export** → pilih format **Excel (.xlsx)**
+5. Download file dan rename menjadi `tweet_full.xlsx`
+
+**Step 2: Simpan File**
+```bash
+# Pindahkan file ke folder get_data
+mv ~/Downloads/tweet_full.xlsx /home/dimas/crawling_sosmed/get_data/
+```
+
+**Step 3: Scrape Replies**
+
+Setelah file `tweet_full.xlsx` tersedia, jalankan script untuk mengambil replies:
+
+```bash
+# Set Twitter Auth Token terlebih dahulu
+export TWITTER_AUTH_TOKEN="your_token_here"
+
+# Masuk ke direktori get_data
+cd /home/dimas/crawling_sosmed/get_data/
+
+# Jalankan script replies
+python replies.py
+```
+
+**Output:**
+- File `{account_name}_all_replies.csv` akan tersimpan di folder `tweets-data/`
+- Script akan otomatis loop setiap tweet dan mengambil replies menggunakan `tweet-harvest`
+
+> **📝 Note:** File `tweet_full.xlsx` harus memiliki header di baris ke-5 dengan kolom: `Name`, `Type`, `Caption`, `Date`, `Likes`, `Replies`, `Retweets`, `Permalink`
+
+---
+
+### 🔍 2. Scraping Data Twitter (Alternatif)
 
 #### **Option A: Docker (Recommended)**
 
@@ -283,7 +325,7 @@ python3 get_Data.py
 - [QUICK_START.md](QUICK_START.md) - Panduan cepat scraping
 - [SCRAPER_README.md](SCRAPER_README.md) - Dokumentasi lengkap
 
-### 📊 2. Upload & Manage Dataset
+### 📊 3. Upload & Manage Dataset
 
 1. Buka **Dataset Manager**: http://localhost:8000/dataset-manager/
 2. Klik **"Upload New Dataset"**
@@ -293,7 +335,7 @@ python3 get_Data.py
 4. Klik **"Gunakan"** untuk switch dataset
 5. Lihat analytics dengan dataset aktif
 
-### 📈 3. View Analytics
+### 📈 4. View Analytics
 
 Navigasi ke halaman analytics:
 - **Descriptive**: http://localhost:8000/analytics/
@@ -371,7 +413,7 @@ curl "http://localhost:8001/api/basic-stats"
 ## 📂 Struktur Project
 
 ```
-crawling_sosmed/
+socnganalis/
 ├── 📄 docker-compose.yml              # Docker orchestration
 ├── 📄 .env                            # Environment variables
 ├── 📜 README.md                       # This file
@@ -525,7 +567,7 @@ Volume: postgres_data (persistent)
 Port: 8000
 Volumes:
   - ./django_app:/app
-  - ./tweets-data:/home/dimas/crawling_sosmed/tweets-data
+  - ./tweets-data:/home/dimas/socnganalis/tweets-data
 ```
 
 #### ⚡ FastAPI Backend
@@ -533,8 +575,8 @@ Volumes:
 Port: 8001
 Volumes:
   - ./fastapi_app:/app
-  - ./tweets-data:/home/dimas/crawling_sosmed/tweets-data
-  - ./assets:/home/dimas/crawling_sosmed/assets
+  - ./tweets-data:/home/dimas/socnganalis/tweets-data
+  - ./assets:/home/dimas/socnganalis/assets
 Memory: 2GB limit, 512MB reserved
 Hot Reload: Enabled
 ```
@@ -643,101 +685,11 @@ docker compose up -d fastapi
 
 ---
 
-## 🎓 Dokumentasi Tambahan
-
-- 📘 [QUICK_START.md](QUICK_START.md) - Panduan cepat untuk scraping Twitter
-- 📗 [SCRAPER_README.md](SCRAPER_README.md) - Dokumentasi lengkap scraper
-- 📙 [DOKUMENTASI_APLIKASI.md](DOKUMENTASI_APLIKASI.md) - Dokumentasi teknis aplikasi
-- 📕 [FEATURE_POST_MODAL.md](FEATURE_POST_MODAL.md) - Fitur post detail modal
-
----
-
-## 🛣️ Roadmap
-
-### 🎯 Coming Soon
-
-- [ ] **Real-time Monitoring** - WebSocket untuk live updates
-- [ ] **Export Reports** - PDF/Excel export dengan branding
-- [ ] **Advanced Filters** - Date range, account, sentiment filters
-- [ ] **User Authentication** - Login & role-based access
-- [ ] **Multi-Platform** - Support Instagram, Facebook, LinkedIn
-- [ ] **Automated Scheduling** - Cron jobs untuk periodic scraping
-- [ ] **Email Alerts** - Notifikasi untuk sentiment spike/drop
-- [ ] **Comparison Mode** - Compare multiple datasets side-by-side
-- [ ] **API Rate Limiting** - Redis-based rate limiter
-- [ ] **Dark Mode** - Dark theme untuk dashboard
-
-### 🚀 Future Enhancements
-
-- **NLP Improvements**
-  - Named Entity Recognition (NER)
-  - Aspect-Based Sentiment Analysis
-  - Sarcasm Detection
-  - Multilingual Support
-
-- **Advanced Analytics**
-  - Influencer Detection
-  - Trend Forecasting
-  - Viral Content Prediction
-  - Community Detection
-
-- **Infrastructure**
-  - Kubernetes deployment
-  - CI/CD pipeline
-  - Auto-scaling
-  - Monitoring (Prometheus/Grafana)
-
----
-
-## 🤝 Contributing
-
-Kontribusi sangat diterima! Silakan:
-
-1. Fork repository ini
-2. Create feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to branch (`git push origin feature/AmazingFeature`)
-5. Open Pull Request
-
-### 📝 Contribution Guidelines
-
-- Gunakan meaningful commit messages
-- Update dokumentasi jika ada perubahan API
-- Tambahkan unit tests untuk fitur baru
-- Follow PEP 8 (Python) dan ESLint (JavaScript)
-
----
-
-## 📄 License
-
-Distributed under the MIT License. See `LICENSE` for more information.
-
----
-
-## 👨‍💻 Author
-
-**Dimas**
-
-- GitHub: [@yourusername](https://github.com/yourusername)
-- Email: your.email@example.com
-
----
-
-## 🙏 Acknowledgments
-
-- [tweet-harvest](https://github.com/th3c0d3br34ker/tweet-harvest) - Twitter scraping tool
-- [FastAPI](https://fastapi.tiangolo.com/) - Modern Python web framework
-- [Django](https://www.djangoproject.com/) - High-level Python web framework
-- [Chart.js](https://www.chartjs.org/) - Beautiful charts library
-- [Scikit-learn](https://scikit-learn.org/) - Machine learning library
-
----
-
 <div align="center">
 
 ### ⭐ Star this repo if you find it helpful!
 
-Made with ❤️ by Dimas
+Made with ❤️ by Dimas - Afief - Jusa -ariel
 
 <img src="https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png" width="100%">
 
